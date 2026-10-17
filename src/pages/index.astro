@@ -1,0 +1,91 @@
+---
+import Header from "../components/Header.astro";
+import Base from "../layouts/Base.astro";
+
+const example = `curl -X POST https://mail.example.com/emails \\
+  -H "Authorization: Bearer \$KEY" \\
+  -d '{
+    "from": "hi@example.com",
+    "to": "you@example.com",
+    "subject": "Hello",
+    "text": "Sent by Bunzzle"
+  }'`;
+---
+
+<Base
+  title="Bunzzle"
+  description="Self-hosted email delivery engine for apps. Open source, Bun-native."
+>
+  <Header />
+  <main class="wrap hero">
+    <div>
+      <h1>Email delivery you run yourself.</h1>
+      <p>
+        A self-hosted delivery engine for apps. It talks SMTP straight to every inbox, warms up
+        your IPs and keeps your reputation clean. Open source, Bun-native, one binary.
+      </p>
+      <div class="actions">
+        <a class="button primary" href="/docs/">Get started</a>
+        <a class="button" href="https://github.com/bunzzle/bunzzle">View on GitHub</a>
+      </div>
+    </div>
+    <pre><code>{example}</code></pre>
+  </main>
+</Base>
+
+<style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 48px;
+    align-items: center;
+    padding-block: 64px;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(40px, 6vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+    margin: 0 0 18px;
+  }
+  p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .button {
+    font-weight: 600;
+    font-size: 15px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    text-decoration: none;
+  }
+  .primary {
+    background: linear-gradient(var(--honey-1), var(--honey-2));
+    border-color: transparent;
+    color: var(--honey-ink);
+  }
+  pre {
+    font: 14px/1.7 var(--font-code);
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin: 0;
+    overflow-x: auto;
+  }
+  @media (max-width: 800px) {
+    .hero {
+      grid-template-columns: minmax(0, 1fr);
+      padding-block: 40px;
+    }
+  }
+</style>

@@ -1,0 +1,10 @@
+:root {
+  --font-display: "Bricolage Grotesque Variable", system-ui, sans-serif;
+  --font-ui: "Geist Variable", system-ui, sans-serif;
+  --font-code: "Geist Mono Variable", ui-monospace, monospace;
+  --honey-1: #ffd36b;
+  --honey-2: #f0a830;
+  --honey-ink: #1a1200;
+  --coral: #ff8a65;
+  --rose: #e11d48;
+}
