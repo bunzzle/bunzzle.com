@@ -10,6 +10,7 @@ export const site = {
   logo: "/logo.png",
   x: { handle: "@bunzzledev", url: "https://x.com/bunzzledev" },
   bluesky: { handle: "@bunzzle.com", url: "https://bsky.app/profile/bunzzle.com" },
+  linkedin: { url: "https://www.linkedin.com/company/bunzzle" },
   release: "v0.1.0",
 };
 
