@@ -1,30 +1,29 @@
+<p align="center"><img src="src/assets/bunzzle.svg" width="96" alt="Bunzzle"></p>
+
 # bunzzle.com
 
-The website for [Bunzzle](https://github.com/bunzzle/bunzzle), a self-hosted email delivery engine for apps.
+The website and documentation for [Bunzzle](https://github.com/bunzzle/bunzzle), a self-hosted email delivery engine for apps.
 
-## Development
+- **Landing page:** what Bunzzle is, how to install it, benchmarks.
+- **Docs:** install, quickstart, API, deliverability, security, FAQ.
+- **For AI tools:** every docs page is also available as Markdown, listed in [`/llms.txt`](https://bunzzle.com/llms.txt).
+
+## Run it locally
 
 ```sh
 bun install
 bun run dev
 ```
 
-`bun run check` type-checks the site and `bun run build` writes the static site to `dist/` and builds the search index.
+`bun run check` checks types, `bun run build` builds the site into `dist/` with its search index.
 
-```
-src/
-  assets/            logo and icons (SVGs used as components)
-  components/
-    brand/           logo and the animated mark
-    layout/          header, footer, search
-    landing/         sections of the home page
-    docs/            sidebar, table of contents, page actions, pager
-  content/docs/      documentation pages (Markdown)
-  layouts/           BaseLayout, DocsLayout
-  lib/               site constants and docs helpers
-  pages/             routes, llms.txt, robots.txt, Markdown copies of each docs page
-  styles/            tokens, global styles, docs prose
-```
+## Edit the docs
+
+Docs pages are Markdown files in [`src/content/docs`](src/content/docs). Each page has a `title`, `description`, `section` and `order` at the top. Open a pull request with your change; every page has an "Edit on GitHub" link.
+
+## Security
+
+Found a security issue in Bunzzle? Please report it privately, see [SECURITY.md](https://github.com/bunzzle/bunzzle/blob/main/SECURITY.md).
 
 ## License
 
