@@ -1,0 +1,25 @@
+---
+import logo from "@/assets/bunzzle.svg";
+---
+
+<span class="logo-mark">
+  <img src={logo.src} alt="" width="17" height="21" />
+  <span>Bunzzle</span>
+</span>
+
+<style>
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  img {
+    height: 21px;
+    width: auto;
+  }
+</style>

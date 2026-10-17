@@ -1,0 +1,139 @@
+---
+import type { MarkdownHeading } from "astro";
+import ChevronIcon from "@/assets/icons/chevron-down.svg";
+
+interface Props {
+  headings: MarkdownHeading[];
+  variant: "rail" | "mobile";
+}
+
+const { headings, variant } = Astro.props;
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{toc.length > 0 && variant === "rail" && (
+  <div class="rail-toc">
+    <span class="title">On this page</span>
+    <nav aria-label="On this page" data-toc>
+      {toc.map((h) => <a class={`d${h.depth}`} href={`#${h.slug}`}>{h.text}</a>)}
+    </nav>
+  </div>
+)}
+
+{toc.length > 0 && variant === "mobile" && (
+  <details class="mobile-toc" data-pagefind-ignore>
+    <summary>
+      On this page
+      <ChevronIcon width={14} height={14} aria-hidden="true" />
+    </summary>
+    <nav aria-label="On this page">{toc.map((h) => <a class={`d${h.depth}`} href={`#${h.slug}`}>{h.text}</a>)}</nav>
+  </details>
+)}
+
+<script>
+  const links = [...document.querySelectorAll<HTMLAnchorElement>("[data-toc] a")];
+  const targets = links.map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1)))).filter(Boolean) as HTMLElement[];
+  const spy = () => {
+    let current = targets[0];
+    for (const t of targets) if (t.getBoundingClientRect().top < 120) current = t;
+    for (const a of links) a.classList.toggle("on", a.hash === `#${current?.id}`);
+  };
+  if (targets.length) {
+    addEventListener("scroll", spy, { passive: true });
+    spy();
+  }
+  for (const a of document.querySelectorAll(".mobile-toc a")) a.addEventListener("click", () => a.closest("details")?.removeAttribute("open"));
+</script>
+
+<style>
+  .rail-toc {
+    padding: 16px;
+    border: 1px solid var(--shell-border);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--shell-solid) 78%, transparent);
+  }
+  .title {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .rail-toc nav {
+    display: flex;
+    flex-direction: column;
+    max-height: 50vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  .rail-toc a {
+    padding: 4px 0 4px 12px;
+    border-left: 1px solid var(--shell-border-strong);
+    color: var(--dim);
+    font-size: 12.5px;
+    line-height: 1.4;
+    transition: color var(--t-fast), border-color var(--t-fast);
+  }
+  .rail-toc a.d3 {
+    padding-left: 24px;
+  }
+  .rail-toc a:hover,
+  .rail-toc a:global(.on) {
+    color: var(--ink);
+  }
+  .rail-toc a:global(.on) {
+    border-left-color: var(--honey-2);
+  }
+  .mobile-toc {
+    display: none;
+  }
+  @media (max-width: 967px) {
+    .mobile-toc {
+      position: sticky;
+      top: var(--docs-header);
+      z-index: 20;
+      display: block;
+      margin: 0 -16px;
+      border-bottom: 1px solid var(--shell-border);
+      background: color-mix(in srgb, var(--shell-solid) 90%, transparent);
+      backdrop-filter: blur(18px);
+    }
+    summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+      padding: 0 16px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      list-style: none;
+      cursor: pointer;
+    }
+    summary::-webkit-details-marker {
+      display: none;
+    }
+    summary svg {
+      transition: transform 0.2s var(--ease-out);
+    }
+    .mobile-toc[open] summary svg {
+      transform: rotate(180deg);
+    }
+    .mobile-toc nav {
+      display: flex;
+      flex-direction: column;
+      max-height: 50vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 0 16px 12px;
+    }
+    .mobile-toc a {
+      padding: 7px 0;
+      color: var(--dim);
+      font-size: 13px;
+    }
+    .mobile-toc a.d3 {
+      padding-left: 14px;
+    }
+  }
+</style>

@@ -1,0 +1,50 @@
+---
+import ArrowIcon from "@/assets/icons/arrow-right.svg";
+import { type Doc, href } from "@/lib/docs";
+
+interface Props {
+  prev?: Doc;
+  next?: Doc;
+}
+
+const { prev, next } = Astro.props;
+---
+
+<nav class="pager" aria-label="Pagination" data-pagefind-ignore>
+  {prev ? (
+    <a class="btn" href={href(prev)} rel="prev"><ArrowIcon class="flip" width={14} height={14} aria-hidden="true" />{prev.data.title}</a>
+  ) : <span></span>}
+  {next && <a class="btn" href={href(next)} rel="next">{next.data.title}<ArrowIcon width={14} height={14} aria-hidden="true" /></a>}
+</nav>
+
+<style>
+  .pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 64px;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55em;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 11px;
+    background: var(--ghost);
+    box-shadow: var(--ghost-highlight);
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+    transition: background-color var(--t-base), transform var(--dur-press) var(--ease-out);
+  }
+  .btn:hover {
+    background: var(--ghost-hover);
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .flip {
+    transform: rotate(180deg);
+  }
+</style>

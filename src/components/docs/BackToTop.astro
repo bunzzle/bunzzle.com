@@ -1,0 +1,50 @@
+---
+import ArrowUpIcon from "@/assets/icons/arrow-up.svg";
+---
+
+<button type="button" class="to-top" aria-label="Back to top" data-top>
+  <ArrowUpIcon width={15} height={15} aria-hidden="true" />
+</button>
+
+<script>
+  const top = document.querySelector<HTMLButtonElement>("[data-top]")!;
+  top.addEventListener("click", () => scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" }));
+  const toggle = () => top.classList.toggle("show", scrollY > 600);
+  addEventListener("scroll", toggle, { passive: true });
+  toggle();
+</script>
+
+<style>
+  .to-top {
+    position: fixed;
+    right: 24px;
+    bottom: calc(24px + env(safe-area-inset-bottom));
+    z-index: 40;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--shell-border);
+    border-radius: 12px;
+    background: var(--menu-bg);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--menu-shadow);
+    color: var(--ink);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s var(--ease-out);
+  }
+  .to-top:global(.show) {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+  @media (max-width: 967px) {
+    .to-top {
+      right: 16px;
+      bottom: calc(16px + env(safe-area-inset-bottom));
+    }
+  }
+</style>

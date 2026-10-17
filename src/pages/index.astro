@@ -1,0 +1,16 @@
+---
+import Bench from "@/components/landing/Bench.astro";
+import Hero from "@/components/landing/Hero.astro";
+import How from "@/components/landing/How.astro";
+import SiteFooter from "@/components/layout/SiteFooter.astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Bunzzle: email delivery on your own servers">
+  <main id="content">
+    <Hero />
+    <How />
+    <Bench />
+  </main>
+  <SiteFooter />
+</BaseLayout>

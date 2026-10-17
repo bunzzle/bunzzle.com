@@ -1,0 +1,74 @@
+---
+import { Font } from "astro:assets";
+import Search from "@/components/layout/Search.astro";
+import SiteHeader from "@/components/layout/SiteHeader.astro";
+import { site } from "@/lib/site";
+import "@/styles/tokens.css";
+import "@/styles/global.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  docs?: boolean;
+}
+
+const { title, description = site.description, docs = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const image = new URL("/og.png", Astro.site);
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#12100e" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta name="twitter:card" content="summary" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" />
+    <Font cssVariable="--font-bricolage" preload />
+    <script is:inline>
+      try {
+        const t = localStorage.getItem("theme");
+        document.documentElement.dataset.theme =
+          t ?? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+      } catch {
+        document.documentElement.dataset.theme = "dark";
+      }
+    </script>
+  </head>
+  <body class:list={{ docs }}>
+    <a class="skip" href="#content">Skip to content</a>
+    <SiteHeader docs={docs} />
+    <slot />
+    <Search />
+    <script>
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add("in");
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: "0px 0px -8% 0px" },
+      );
+      for (const el of document.querySelectorAll(".reveal")) io.observe(el);
+    </script>
+  </body>
+</html>

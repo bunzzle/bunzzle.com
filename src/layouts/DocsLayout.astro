@@ -1,0 +1,152 @@
+---
+import type { MarkdownHeading } from "astro";
+import CopyIcon from "@/assets/icons/copy.svg";
+import BackToTop from "@/components/docs/BackToTop.astro";
+import DocsSidebar from "@/components/docs/DocsSidebar.astro";
+import DocsToc from "@/components/docs/DocsToc.astro";
+import HelpCard from "@/components/docs/HelpCard.astro";
+import PageActions from "@/components/docs/PageActions.astro";
+import Pager from "@/components/docs/Pager.astro";
+import { type Doc, ordered } from "@/lib/docs";
+import BaseLayout from "./BaseLayout.astro";
+import "@/styles/prose.css";
+
+interface Props {
+  doc: Doc;
+  headings: MarkdownHeading[];
+}
+
+const { doc, headings } = Astro.props;
+const all = await ordered();
+const i = all.findIndex((d) => d.id === doc.id);
+---
+
+<BaseLayout title={`${doc.data.title} · Bunzzle docs`} description={doc.data.description} docs>
+  <div class="layout">
+    <DocsSidebar docs={all} current={doc.id} />
+    <main class="main" id="content">
+      <DocsToc headings={headings} variant="mobile" />
+      <article class="article" data-pagefind-body>
+        <header class="head">
+          <h1>{doc.data.title}</h1>
+          <PageActions id={doc.id} />
+        </header>
+        <p class="lead">{doc.data.description}</p>
+        <div class="prose">
+          <slot />
+        </div>
+        <Pager prev={all[i - 1]} next={all[i + 1]} />
+      </article>
+    </main>
+    <aside class="rail" data-pagefind-ignore>
+      <DocsToc headings={headings} variant="rail" />
+      <HelpCard />
+    </aside>
+  </div>
+  <BackToTop />
+  <template id="copy-icon"><CopyIcon width={14} height={14} aria-hidden="true" /></template>
+</BaseLayout>
+
+<script>
+  const icon = document.querySelector<HTMLTemplateElement>("#copy-icon");
+  for (const pre of document.querySelectorAll<HTMLElement>(".prose pre")) {
+    const frame = document.createElement("div");
+    frame.className = "code-frame";
+    pre.replaceWith(frame);
+    frame.append(pre);
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "copy";
+    b.setAttribute("aria-label", "Copy code");
+    if (icon) b.append(icon.content.cloneNode(true));
+    b.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(pre.querySelector("code")?.innerText ?? "");
+      b.classList.add("done");
+      setTimeout(() => b.classList.remove("done"), 1200);
+    });
+    frame.append(b);
+  }
+</script>
+
+<style>
+  .layout {
+    display: grid;
+    grid-template-columns: 256px minmax(0, 1fr) 256px;
+    gap: 32px;
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: calc(var(--docs-header) + 16px) 20px 0;
+  }
+  .main {
+    min-width: 0;
+  }
+  .article {
+    max-width: var(--docs-content);
+    margin: 0 auto;
+    padding: 24px 0 100px;
+    animation: enter 0.28s var(--ease-out) both;
+  }
+  @keyframes enter {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(2.25rem, 1.55rem + 2.6vw, 2.75rem);
+    font-weight: 700;
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+  }
+  .lead {
+    max-width: 60ch;
+    margin: 1.15rem 0 2rem;
+    color: var(--ink-2);
+    font-size: 1.125rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  .rail {
+    position: sticky;
+    top: calc(var(--docs-header) + 16px);
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  @media (max-width: 1240px) {
+    .layout {
+      grid-template-columns: 256px minmax(0, 1fr);
+    }
+    .rail {
+      display: none;
+    }
+  }
+  @media (max-width: 967px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+      padding: var(--docs-header) 16px 0;
+    }
+    .article {
+      padding-top: 20px;
+    }
+    .head {
+      flex-direction: column;
+      gap: 14px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .article {
+      animation: none;
+    }
+  }
+</style>
