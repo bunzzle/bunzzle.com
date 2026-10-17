@@ -46,7 +46,7 @@ const all = docs ? await ordered() : [];
         <GithubIcon width={15} height={15} aria-hidden="true" />
         <span>Star</span>
       </a>
-      <a class="cta" href="/docs/"><span class="cta-long">Get Started</span><span class="cta-short">Start</span></a>
+      <a class="cta" href="/docs/">Get Started</a>
       <button type="button" class="ctl burger" data-burger aria-label="Menu" aria-expanded="false">
         <span></span><span></span><span></span>
       </button>
@@ -320,7 +320,6 @@ const all = docs ? await ordered() : [];
   .cta:active {
     transform: scale(0.97);
   }
-  .cta-short,
   .burger {
     display: none;
   }
@@ -541,12 +540,6 @@ const all = docs ? await ordered() : [];
       padding: 0 12px;
       border-radius: 8px;
       font-size: 12px;
-    }
-    .cta-long {
-      display: none;
-    }
-    .cta-short {
-      display: inline;
     }
     .nav-docs .cta {
       display: none;

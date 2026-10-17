@@ -1,11 +1,13 @@
 ---
 import { links } from "@/lib/site";
 const cards = [
-  ["~6,000", "/s", "Accepted", "Emails accepted by the API and stored durably, p99 under 27 ms."],
-  ["1,480", "/s", "Delivered", "End to end, with STARTTLS and two DKIM signatures each."],
-  ["1.2", "ms", "CPU per email", "Two thirds of it is the RSA signature."],
-  ["285", "MB", "Memory", "All five roles together, during sustained sending."],
-];
+  ["~", 6000, 0, "/s", "Accepted", "Emails accepted by the API and stored durably, p99 under 27 ms."],
+  ["", 1480, 0, "/s", "Delivered", "End to end, with STARTTLS and two DKIM signatures each."],
+  ["", 1.2, 1, "ms", "CPU per email", "Two thirds of it is the RSA signature."],
+  ["", 285, 0, "MB", "Memory", "All five roles together, during sustained sending."],
+] as const;
+const format = (n: number, d: number) =>
+  n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 ---
 
 <section class="bench">
@@ -18,9 +20,15 @@ const cards = [
       </p>
     </div>
     <div class="grid">
-      {cards.map(([n, unit, title, text]) => (
+      {cards.map(([prefix, value, decimals, unit, title, text]) => (
         <article class="card reveal">
-          <div class="visual"><span class="n">{n}<small>{unit}</small></span></div>
+          <div class="visual">
+            <span class="n">
+              <span class="count" data-count={value} data-decimals={decimals} data-prefix={prefix}>
+                {prefix}{format(value, decimals)}
+              </span><small>{unit}</small>
+            </span>
+          </div>
           <div class="body">
             <h3>{title}</h3>
             <p>{text}</p>
@@ -30,6 +38,48 @@ const cards = [
     </div>
   </div>
 </section>
+
+<script>
+  const counts = [...document.querySelectorAll<HTMLElement>(".bench .count")];
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (!still && "IntersectionObserver" in window) {
+    const ease = (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t));
+    const show = (el: HTMLElement, n: number) => {
+      const d = Number(el.dataset.decimals);
+      el.textContent =
+        (el.dataset.prefix ?? "") +
+        n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+    };
+    const run = (el: HTMLElement, delay: number) => {
+      const end = Number(el.dataset.count);
+      const time = 1800;
+      let start = 0;
+      const step = (now: number) => {
+        start ||= now + delay;
+        const t = Math.min(Math.max((now - start) / time, 0), 1);
+        show(el, end * ease(t));
+        if (t < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+    for (const el of counts) {
+      el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+      show(el, 0);
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          io.unobserve(e.target);
+          const el = e.target as HTMLElement;
+          run(el, counts.indexOf(el) * 120);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    for (const el of counts) io.observe(el);
+  }
+</script>
 
 <style>
   .bench {
@@ -90,6 +140,11 @@ const cards = [
     font-weight: 500;
     letter-spacing: -0.04em;
     line-height: 1;
+  }
+  .count {
+    display: inline-block;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
   }
   .n small {
     margin-left: 3px;
