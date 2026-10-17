@@ -1,0 +1,173 @@
+---
+import SearchIcon from "@/assets/icons/search.svg";
+import { type Doc, href, sections } from "@/lib/docs";
+
+interface Props {
+  docs: Doc[];
+  current: string;
+}
+
+const { docs, current } = Astro.props;
+---
+
+<aside class="sidebar" aria-label="Documentation">
+  <label class="filter">
+    <SearchIcon width={13} height={13} aria-hidden="true" />
+    <input type="search" placeholder={`Filter ${docs.length} pages...`} aria-label="Filter pages" data-filter />
+  </label>
+  <div class="shell is-at-top" data-shell>
+    <nav class="scroll" data-scroll>
+      {sections.map((s) => (
+        <div class="group">
+          <span class="label">{s}</span>
+          {docs.filter((d) => d.data.section === s).map((d) => (
+            <a class:list={["item", { active: d.id === current }]} href={href(d)} aria-current={d.id === current ? "page" : undefined}>
+              {d.data.title}
+            </a>
+          ))}
+        </div>
+      ))}
+    </nav>
+  </div>
+</aside>
+
+<script>
+  const sidebar = document.querySelector<HTMLElement>(".sidebar");
+  sidebar?.querySelector<HTMLInputElement>("[data-filter]")?.addEventListener("input", (e) => {
+    const q = (e.target as HTMLInputElement).value.trim().toLowerCase();
+    for (const g of sidebar.querySelectorAll<HTMLElement>(".group")) {
+      let any = false;
+      for (const a of g.querySelectorAll<HTMLElement>(".item")) {
+        const hit = !q || (a.textContent ?? "").toLowerCase().includes(q);
+        a.hidden = !hit;
+        any ||= hit;
+      }
+      g.hidden = !any;
+    }
+  });
+  const shell = sidebar?.querySelector<HTMLElement>("[data-shell]");
+  const sc = sidebar?.querySelector<HTMLElement>("[data-scroll]");
+  const edges = () => {
+    if (!shell || !sc) return;
+    shell.classList.toggle("is-at-top", sc.scrollTop < 2);
+    shell.classList.toggle("is-at-bottom", sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 2);
+  };
+  sc?.addEventListener("scroll", edges, { passive: true });
+  addEventListener("resize", edges, { passive: true });
+  edges();
+  sc?.querySelector(".active")?.scrollIntoView({ block: "nearest" });
+</script>
+
+<style>
+  .sidebar {
+    position: sticky;
+    top: calc(var(--docs-header) + 16px);
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    height: calc(100dvh - var(--docs-header) - 32px);
+    padding-top: 14px;
+    border: 1px solid var(--shell-border);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--shell-solid) 78%, transparent);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 14px 40px rgba(24, 22, 15, 0.08);
+  }
+  .filter {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    height: 34px;
+    margin: 0 14px 18px;
+    padding: 0 10px;
+    border: 1px solid var(--shell-border-strong);
+    border-radius: 9px;
+    background: var(--field);
+    color: var(--dim);
+    transition: border-color var(--t-fast);
+  }
+  .filter:focus-within {
+    border-color: color-mix(in srgb, var(--honey-2) 50%, transparent);
+  }
+  .filter input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font-size: 12px;
+  }
+  .shell {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+  }
+  .shell::before,
+  .shell::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 3;
+    height: 28px;
+    pointer-events: none;
+    transition: opacity 0.18s;
+  }
+  .shell::before {
+    top: 0;
+    background: linear-gradient(to bottom, rgba(var(--shell-fade), 0.98), rgba(var(--shell-fade), 0));
+  }
+  .shell::after {
+    bottom: 0;
+    height: 38px;
+    border-radius: 0 0 16px 16px;
+    background: linear-gradient(to top, rgba(var(--shell-fade), 0.98), rgba(var(--shell-fade), 0));
+  }
+  .shell:global(.is-at-top)::before,
+  .shell:global(.is-at-bottom)::after {
+    opacity: 0;
+  }
+  .scroll {
+    height: 100%;
+    padding: 0 14px 36px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+  }
+  .group {
+    display: flex;
+    flex-direction: column;
+  }
+  .group + .group {
+    margin-top: 22px;
+  }
+  .label {
+    margin-bottom: 6px;
+    color: var(--dim);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .item {
+    width: fit-content;
+    padding: 4px 0;
+    color: var(--ink-2);
+    font-size: 13.6px;
+    transition: color var(--t-base), transform var(--t-base);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .item:hover {
+      color: var(--accent);
+      transform: translateX(2px);
+    }
+  }
+  .item.active {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  @media (max-width: 967px) {
+    .sidebar {
+      display: none;
+    }
+  }
+</style>

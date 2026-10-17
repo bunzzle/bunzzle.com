@@ -1,0 +1,38 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Not found · Bunzzle" description="This page does not exist.">
+  <main class="lost inner" id="content">
+    <span class="code">404</span>
+    <h1 class="title">Nothing in this box.</h1>
+    <p>The page you are looking for does not exist or has moved.</p>
+    <div class="row">
+      <a class="btn btn-primary" href="/">Home</a>
+      <a class="btn btn-ghost" href="/docs/">Docs</a>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .lost {
+    display: grid;
+    justify-items: start;
+    gap: 16px;
+    padding-top: 200px;
+    padding-bottom: 160px;
+  }
+  .code {
+    color: var(--accent);
+    font: 500 13px var(--font-code);
+  }
+  p {
+    margin: 0;
+    color: var(--muted);
+  }
+  .row {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+  }
+</style>

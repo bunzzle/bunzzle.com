@@ -1,22 +1,50 @@
-import starlight from "@astrojs/starlight";
-import { defineConfig } from "astro/config";
+import sitemap from "@astrojs/sitemap";
+import { defineConfig, fontProviders, passthroughImageService } from "astro/config";
 
 export default defineConfig({
   site: "https://bunzzle.com",
-  integrations: [
-    starlight({
-      title: "Bunzzle",
-      logo: { src: "./src/assets/bunzzle.svg" },
-      favicon: "/favicon.svg",
-      social: [{ icon: "github", label: "GitHub", href: "https://github.com/bunzzle/bunzzle" }],
-      customCss: [
-        "@fontsource-variable/bricolage-grotesque",
-        "@fontsource-variable/geist",
-        "@fontsource-variable/geist-mono",
-        "./src/styles/tokens.css",
-        "./src/styles/docs.css",
-      ],
-      sidebar: [{ label: "Docs", items: [{ autogenerate: { directory: "docs" } }] }],
-    }),
+  trailingSlash: "always",
+  integrations: [sitemap()],
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: "hover",
+  },
+  image: {
+    service: passthroughImageService(),
+  },
+  fonts: [
+    {
+      provider: fontProviders.fontsource(),
+      name: "Geist",
+      cssVariable: "--font-geist",
+      weights: ["100 900"],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["system-ui", "sans-serif"],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Geist Mono",
+      cssVariable: "--font-geist-mono",
+      weights: ["100 900"],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["ui-monospace", "monospace"],
+    },
+    {
+      provider: fontProviders.fontsource(),
+      name: "Bricolage Grotesque",
+      cssVariable: "--font-bricolage",
+      weights: ["700"],
+      styles: ["normal"],
+      subsets: ["latin"],
+      fallbacks: ["system-ui", "sans-serif"],
+    },
   ],
+  markdown: {
+    shikiConfig: {
+      themes: { light: "github-light", dark: "github-dark" },
+      defaultColor: false,
+    },
+  },
 });

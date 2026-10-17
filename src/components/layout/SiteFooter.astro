@@ -1,0 +1,270 @@
+---
+import ArrowIcon from "@/assets/icons/arrow-right.svg";
+import Logo from "@/components/brand/Logo.astro";
+import { links, site } from "@/lib/site";
+
+const cols: [string, [string, string][]][] = [
+  ["Product", [["Docs", "/docs/"], ["API", "/docs/api/"], ["Changelog", links.releases], ["llms.txt", "/llms.txt"]]],
+  ["Project", [["GitHub", site.repo], ["Issues", links.issues], ["Security", links.security], ["License", links.license]]],
+  ["Contact", [[site.email, `mailto:${site.email}`], [site.author.name, site.author.url]]],
+];
+---
+
+<footer class="footer">
+  <div class="inner">
+    <div class="card">
+      <div class="cta" data-cta>
+        <div class="glow" aria-hidden="true"></div>
+        <h2 class="title">Send email you own.</h2>
+        <p>Install Bunzzle on your server, point your domain at it and send from your apps in minutes.</p>
+        <div class="buttons">
+          <a class="cbtn primary" href="/docs/">
+            Get started
+            <ArrowIcon width={14} height={14} aria-hidden="true" />
+          </a>
+          <a class="cbtn secondary" href={site.repo}>Star on GitHub</a>
+        </div>
+      </div>
+      <div class="top">
+        <div class="brand">
+          <a href="/" aria-label="Bunzzle home"><Logo /></a>
+          <p>Self-hosted email delivery for apps.<br />Open source. Bun-native.</p>
+        </div>
+        <nav class="cols">
+          {cols.map(([title, links]) => (
+            <div class="col">
+              <span class="col-title">{title}</span>
+              {links.map(([label, h]) => <a href={h}>{label}</a>)}
+            </div>
+          ))}
+        </nav>
+        <div class="legal">
+          <span>© 2026 Bunzzle</span>
+          <span>Built by <a href={site.author.url}>{site.author.name}</a></span>
+          <a href={links.license}>AGPL-3.0</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const cta = document.querySelector<HTMLElement>("[data-cta]");
+  if (cta) {
+    new IntersectionObserver(
+      ([e], o) => {
+        if (e?.isIntersecting) {
+          cta.classList.add("lit");
+          o.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    ).observe(cta);
+  }
+</script>
+
+<style>
+  .footer {
+    padding: clamp(24px, 3vw, 40px) 0 24px;
+    color: var(--dim);
+  }
+  .card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    background: var(--footer-card);
+    box-shadow: var(--footer-edge);
+    isolation: isolate;
+  }
+  .cta {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 6px 6px 0;
+    padding: clamp(80px, 7.5vw, 104px) 24px clamp(120px, 11vw, 156px);
+    border-radius: 18px;
+    background: var(--cta-card);
+    overflow: hidden;
+    text-align: center;
+    isolation: isolate;
+  }
+  .cta::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.045);
+    pointer-events: none;
+  }
+  .glow {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: 0;
+    height: 100%;
+    z-index: 0;
+    background:
+      radial-gradient(50% 55% at 50% 100%, rgba(240, 168, 48, 0.95), transparent 70%),
+      radial-gradient(35% 45% at 30% 100%, rgba(255, 138, 101, 0.75), transparent 70%),
+      radial-gradient(35% 45% at 72% 100%, rgba(225, 29, 72, 0.55), transparent 70%);
+    filter: blur(30px);
+    opacity: 0;
+    transform: translateY(45%);
+    transition: opacity 1.6s var(--ease-out), transform 1.6s var(--ease-out);
+  }
+  .cta.lit .glow {
+    opacity: 0.8;
+    transform: none;
+  }
+  .cta .title,
+  .cta p,
+  .buttons {
+    position: relative;
+    z-index: 1;
+  }
+  .cta .title {
+    margin-bottom: 12px;
+  }
+  .cta p {
+    max-width: 44ch;
+    margin: 0 0 32px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .buttons {
+    display: flex;
+    gap: 10px;
+  }
+  .cbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: filter 0.2s ease, background 0.2s ease, transform var(--dur-press) var(--ease-out);
+  }
+  .cbtn:active {
+    transform: scale(0.97);
+  }
+  .primary {
+    padding-right: 19px;
+    background: var(--btn-primary);
+    color: var(--btn-primary-ink);
+  }
+  .secondary {
+    background: var(--ghost);
+    box-shadow: var(--ghost-highlight);
+    backdrop-filter: var(--ghost-blur);
+    color: var(--ink);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .primary:hover {
+      filter: brightness(0.9);
+      transform: translateY(-1px);
+    }
+    .secondary:hover {
+      background: var(--ghost-hover);
+      transform: translateY(-1px);
+    }
+  }
+  .top {
+    display: grid;
+    grid-template-areas: "brand nav" "legal nav";
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-rows: auto 1fr;
+    column-gap: 48px;
+    row-gap: 32px;
+    padding: 40px 40px 36px;
+  }
+  .brand {
+    grid-area: brand;
+    color: var(--ink);
+  }
+  .brand :global(.logo-mark) {
+    font-size: 26px;
+  }
+  .brand :global(.logo-mark img) {
+    height: 30px;
+  }
+  .brand p {
+    margin: 14px 0 0;
+    color: var(--dim);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .cols {
+    grid-area: nav;
+    display: grid;
+    grid-template-columns: repeat(3, max-content);
+    column-gap: clamp(40px, 5vw, 80px);
+    font-size: 13px;
+  }
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    line-height: 1.5;
+  }
+  .col-title {
+    display: flex;
+    align-items: center;
+    min-height: 34px;
+    color: var(--ink);
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .col a,
+  .legal a {
+    transition: color 0.18s ease;
+  }
+  .col a:hover,
+  .legal a:hover {
+    color: var(--ink);
+  }
+  .legal {
+    grid-area: legal;
+    align-self: end;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 0;
+    font-size: 12px;
+  }
+  .legal > * + *::before {
+    content: "·";
+    display: inline-block;
+    margin: 0 10px;
+    opacity: 0.7;
+  }
+  @media (max-width: 700px) {
+    .card {
+      border-radius: 20px;
+    }
+    .top {
+      grid-template-areas: "brand" "nav" "legal";
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: none;
+      padding: 28px 22px 28px;
+    }
+    .cols {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 16px;
+    }
+    .cta {
+      padding: 56px 20px 96px;
+    }
+    .buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+    .cbtn {
+      justify-content: center;
+    }
+  }
+</style>

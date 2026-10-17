@@ -1,0 +1,127 @@
+---
+import { links } from "@/lib/site";
+const cards = [
+  ["~6,000", "/s", "Accepted", "Emails accepted by the API and stored durably, p99 under 27 ms."],
+  ["1,480", "/s", "Delivered", "End to end, with STARTTLS and two DKIM signatures each."],
+  ["1.2", "ms", "CPU per email", "Two thirds of it is the RSA signature."],
+  ["285", "MB", "Memory", "All five roles together, during sustained sending."],
+];
+---
+
+<section class="bench">
+  <div class="inner">
+    <div class="head reveal">
+      <h2 class="title">Benchmarks</h2>
+      <p>
+        A 2-CPU, 2 GB Linux machine, with the load generator and test mail servers on the same CPUs.{" "}
+        <a href={links.bench}>See the method</a>
+      </p>
+    </div>
+    <div class="grid">
+      {cards.map(([n, unit, title, text]) => (
+        <article class="card reveal">
+          <div class="visual"><span class="n">{n}<small>{unit}</small></span></div>
+          <div class="body">
+            <h3>{title}</h3>
+            <p>{text}</p>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .bench {
+    padding: 96px 0;
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px 48px;
+    margin-bottom: 40px;
+  }
+  .head p {
+    max-width: 46ch;
+    margin: 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .head a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--shell-border-strong);
+    text-underline-offset: 3px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+  .card {
+    padding: 5px;
+    border-radius: 16px;
+    background: var(--ghost-track);
+    box-shadow: var(--ghost-highlight);
+  }
+  :global(:root[data-theme="light"]) .card {
+    background: #fafaf9;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .visual {
+    display: grid;
+    place-items: center;
+    height: 150px;
+    border-radius: 11px;
+    background-color: rgba(8, 7, 6, 0.5);
+    background-image: radial-gradient(var(--dots) 1px, transparent 1.4px);
+    background-size: 14px 14px;
+  }
+  :global(:root[data-theme="light"]) .visual {
+    background-color: #fff;
+    box-shadow: inset 0 0 0 1px var(--line);
+  }
+  .n {
+    color: var(--ink);
+    font-size: 44px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+  .n small {
+    margin-left: 3px;
+    color: var(--muted);
+    font-size: 18px;
+    letter-spacing: -0.01em;
+  }
+  .body {
+    padding: 16px 17px 15px;
+  }
+  h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .body p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 520px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .bench {
+      padding: 64px 0;
+    }
+  }
+</style>

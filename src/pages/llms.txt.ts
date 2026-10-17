@@ -1,19 +1,23 @@
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
+import { href, ordered, sections } from "@/lib/docs";
+import { site } from "@/lib/site";
 
-export const GET: APIRoute = async ({ site }) => {
-  const docs = await getCollection("docs");
-  const links = docs
-    .sort((a, b) => (a.data.sidebar.order ?? 99) - (b.data.sidebar.order ?? 99))
-    .map((d) => `- [${d.data.title}](${new URL(`/${d.id}/`, site)})${d.data.description ? `: ${d.data.description}` : ""}`);
+export const GET: APIRoute = async ({ site: origin }) => {
+  const docs = await ordered();
   const body = [
     "# Bunzzle",
     "",
-    "> Self-hosted email delivery engine for apps. Open source, Bun-native.",
+    `> ${site.description}`,
     "",
-    "## Docs",
-    "",
-    ...links,
+    "Every page is also available as Markdown at the same path with .md (for example /docs/install.md).",
+    ...sections.flatMap((s) => [
+      "",
+      `## ${s}`,
+      "",
+      ...docs
+        .filter((d) => d.data.section === s)
+        .map((d) => `- [${d.data.title}](${new URL(href(d), origin)}): ${d.data.description}`),
+    ]),
     "",
   ].join("\n");
   return new Response(body, { headers: { "Content-Type": "text/plain; charset=utf-8" } });

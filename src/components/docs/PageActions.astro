@@ -1,0 +1,130 @@
+---
+import ChevronIcon from "@/assets/icons/chevron-down.svg";
+import CopyIcon from "@/assets/icons/copy.svg";
+import { site } from "@/lib/site";
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const raw = `/docs/${id}.md`;
+---
+
+<div class="actions" data-pagefind-ignore>
+  <button type="button" class="action primary" data-copy-page={raw}>
+    <CopyIcon width={13} height={13} aria-hidden="true" />
+    <span>Copy as Markdown</span>
+  </button>
+  <button type="button" class="action more" aria-label="More page actions" aria-haspopup="menu" aria-expanded="false" data-more>
+    <ChevronIcon width={13} height={13} aria-hidden="true" />
+  </button>
+  <div class="menu" role="menu" data-more-menu hidden>
+    <a role="menuitem" href={raw}>View as Markdown</a>
+    <a role="menuitem" href="/llms.txt">Open llms.txt</a>
+    <a role="menuitem" href={`${site.siteRepo}/blob/main/src/content/docs/${id}.md`}>Edit on GitHub</a>
+  </div>
+</div>
+
+<script>
+  const copy = document.querySelector<HTMLButtonElement>("[data-copy-page]");
+  copy?.addEventListener("click", async () => {
+    await navigator.clipboard.writeText(await (await fetch(copy.dataset.copyPage!)).text());
+    const label = copy.querySelector("span")!;
+    label.textContent = "Copied";
+    setTimeout(() => (label.textContent = "Copy as Markdown"), 1400);
+  });
+  const more = document.querySelector<HTMLButtonElement>("[data-more]");
+  const menu = document.querySelector<HTMLElement>("[data-more-menu]");
+  const set = (open: boolean) => {
+    if (!menu || !more) return;
+    menu.hidden = !open;
+    more.setAttribute("aria-expanded", String(open));
+  };
+  more?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    set(Boolean(menu?.hidden));
+  });
+  addEventListener("click", () => set(false));
+  addEventListener("keydown", (e) => e.key === "Escape" && set(false));
+</script>
+
+<style>
+  .actions {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+    border: 1px solid var(--control-border);
+    border-radius: var(--radius-sm);
+    background: var(--control-bg);
+    box-shadow: var(--control-shadow);
+  }
+  .action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    height: 30px;
+    padding: 0 0.75em;
+    border: 0;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--t-base), color var(--t-base);
+  }
+  .action:hover {
+    color: var(--ink);
+    background: var(--control-hover);
+  }
+  .primary {
+    border-radius: 10px 0 0 10px;
+  }
+  .more {
+    padding: 0 0.55em;
+    border-left: 1px solid var(--shell-border);
+    border-radius: 0 10px 10px 0;
+  }
+  .menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    min-width: 190px;
+    padding: 6px;
+    border: 1px solid var(--shell-border);
+    border-radius: 12px;
+    background: var(--menu-bg);
+    backdrop-filter: blur(24px);
+    box-shadow: var(--menu-shadow);
+    animation: drop 0.18s ease;
+  }
+  .menu[hidden] {
+    display: none;
+  }
+  .menu a {
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .menu a:hover {
+    background: var(--ghost);
+    color: var(--ink);
+  }
+  @keyframes drop {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+  }
+  @media (max-width: 967px) {
+    .menu {
+      left: 0;
+      right: auto;
+    }
+  }
+</style>

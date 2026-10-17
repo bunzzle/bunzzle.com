@@ -1,0 +1,125 @@
+---
+import ArrowIcon from "@/assets/icons/arrow-right.svg";
+import CopyIcon from "@/assets/icons/copy.svg";
+import { links } from "@/lib/site";
+const install = `curl -fsSLO ${links.installScript} && sudo sh install.sh`;
+const env = [
+  ['<span class="t-kw">BUNZZLE_EHLO_NAME</span>=<span class="t-str">mail.example.com</span>', false],
+  ['<span class="t-kw">BUNZZLE_SOURCE_IPS</span>=<span class="t-str">203.0.113.10</span>', true],
+  ['<span class="t-kw">BUNZZLE_PUBLIC_URL</span>=<span class="t-str">https://mail.example.com</span>', false],
+  ['<span class="t-kw">BUNZZLE_INBOUND_PORT</span>=<span class="t-str">25</span>', false],
+] as const;
+---
+
+<section class="how">
+  <div class="inner grid">
+    <div class="text reveal">
+      <h2 class="title">One command,<br />and it's running.</h2>
+      <p>
+        The installer checks the signed release, creates a user and a systemd sandbox for each of the five roles and
+        starts them. Set three values, then <code>bunzzle doctor</code> tells you what is left to fix.
+      </p>
+      <a class="btn btn-ghost" href="/docs/install/">
+        Installation guide
+        <ArrowIcon width={16} height={16} aria-hidden="true" />
+      </a>
+    </div>
+    <div class="visual reveal">
+      <div class="window term-win">
+        <div class="window-bar">
+          Terminal
+          <button type="button" class="window-action" data-copy={install} aria-label="Copy install command">
+            <CopyIcon width={13} height={13} aria-hidden="true" />
+          </button>
+        </div>
+        <div class="well">
+          <pre class="term"><span><span class="t-mute">$</span> curl -fsSLO {links.installScript}</span><span><span class="t-mute">$</span> sudo sh install.sh</span></pre>
+        </div>
+      </div>
+      <div class="window env-win">
+        <div class="window-bar">/etc/bunzzle/bunzzle.env</div>
+        <div class="well">
+          <pre class="code">{env.map(([l, on]) => <span class:list={["ln", { edited: on }]} set:html={l} />)}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  for (const b of document.querySelectorAll<HTMLButtonElement>(".how [data-copy]")) {
+    b.addEventListener("click", async () => {
+      await navigator.clipboard.writeText(b.dataset.copy ?? "");
+      b.style.color = "var(--accent)";
+      setTimeout(() => (b.style.color = ""), 1200);
+    });
+  }
+</script>
+
+<style>
+  .how {
+    padding: 112px 0;
+    background: var(--bg-deep);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: 64px;
+  }
+  .text p {
+    max-width: 44ch;
+    margin: 18px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .text code {
+    padding: 1px 6px;
+    border-radius: 6px;
+    background: var(--ghost);
+    color: var(--ink);
+    font-size: 0.88em;
+  }
+  .text .btn {
+    margin-top: 30px;
+  }
+  .visual {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .term-win {
+    width: 78%;
+    align-self: flex-start;
+  }
+  .term-win .term span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .env-win {
+    width: 86%;
+    align-self: flex-end;
+  }
+  .edited {
+    background: var(--row-active);
+  }
+  @media (max-width: 1000px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 48px;
+    }
+    .term-win,
+    .env-win {
+      width: 100%;
+    }
+  }
+  @media (max-width: 600px) {
+    .how {
+      padding: 72px 0;
+    }
+    .code {
+      font-size: 12px;
+    }
+  }
+</style>

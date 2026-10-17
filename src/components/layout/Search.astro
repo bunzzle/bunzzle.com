@@ -1,0 +1,177 @@
+---
+import SearchIcon from "@/assets/icons/search.svg";
+---
+
+<dialog id="search" aria-label="Search docs">
+  <div class="box">
+    <div class="field">
+      <SearchIcon width={16} height={16} aria-hidden="true" />
+      <input type="search" placeholder="Search docs" autocomplete="off" spellcheck="false" />
+      <kbd>esc</kbd>
+    </div>
+    <ul></ul>
+    <p class="empty" hidden>No results.</p>
+  </div>
+</dialog>
+
+<script>
+  type Hit = { url: string; meta: { title: string }; excerpt: string };
+  type Pagefind = { search: (q: string) => Promise<{ results: { data: () => Promise<Hit> }[] }> };
+
+  const dialog = document.querySelector<HTMLDialogElement>("#search")!;
+  const input = dialog.querySelector("input")!;
+  const list = dialog.querySelector("ul")!;
+  const empty = dialog.querySelector<HTMLElement>(".empty")!;
+  let pagefind: Pagefind | undefined;
+  let seq = 0;
+
+  const open = async () => {
+    dialog.showModal();
+    input.focus();
+    if (!pagefind) {
+      try {
+        const url = `${location.origin}/pagefind/pagefind.js`;
+        pagefind = (await import(url)) as Pagefind;
+        if (input.value.trim()) input.dispatchEvent(new Event("input"));
+      } catch {
+        empty.textContent = "Search is available on the built site.";
+        empty.hidden = false;
+      }
+    }
+  };
+
+  for (const b of document.querySelectorAll("[data-open-search]")) b.addEventListener("click", open);
+  addEventListener("keydown", (e) => {
+    const typing = /input|textarea/i.test((e.target as HTMLElement).tagName);
+    if (((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") || (e.key === "/" && !typing && !dialog.open)) {
+      e.preventDefault();
+      dialog.open ? dialog.close() : open();
+    }
+  });
+  dialog.addEventListener("click", (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  input.addEventListener("input", async () => {
+    const q = input.value.trim();
+    const mine = ++seq;
+    if (!pagefind || !q) {
+      list.replaceChildren();
+      empty.hidden = true;
+      return;
+    }
+    const found = await pagefind.search(q);
+    const hits = await Promise.all(found.results.slice(0, 8).map((r) => r.data()));
+    if (mine !== seq) return;
+    list.replaceChildren(
+      ...hits.map((h) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = h.url;
+        const t = document.createElement("strong");
+        t.textContent = h.meta.title;
+        const x = document.createElement("span");
+        x.innerHTML = h.excerpt;
+        a.append(t, x);
+        li.append(a);
+        return li;
+      }),
+    );
+    empty.textContent = "No results.";
+    empty.hidden = hits.length > 0;
+  });
+</script>
+
+<style>
+  dialog {
+    width: min(580px, calc(100vw - 32px));
+    margin: 12vh auto auto;
+    padding: 0;
+    border: 1px solid var(--shell-border);
+    border-radius: 14px;
+    background: var(--menu-bg);
+    backdrop-filter: blur(32px) saturate(1.3);
+    -webkit-backdrop-filter: blur(32px) saturate(1.3);
+    color: var(--ink);
+    box-shadow: var(--menu-shadow), 0 30px 80px -20px rgba(0, 0, 0, 0.5);
+  }
+  dialog[open] {
+    animation: pop 0.2s var(--ease-out);
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: translateY(-6px) scale(0.99);
+    }
+  }
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(2px);
+  }
+  .field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border-bottom: 1px solid var(--shell-border);
+    color: var(--dim);
+  }
+  input {
+    flex: 1;
+    height: 52px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font: 15px var(--font-ui);
+  }
+  kbd {
+    padding: 2px 6px;
+    border: 1px solid var(--shell-border-strong);
+    border-radius: 5px;
+    color: var(--dim);
+    font-size: 11px;
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 6px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  ul:empty {
+    display: none;
+  }
+  ul :global(a) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--ink);
+  }
+  ul :global(a:hover),
+  ul :global(a:focus) {
+    background: var(--ghost);
+    outline: 0;
+  }
+  ul :global(strong) {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  ul :global(span) {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  ul :global(mark) {
+    background: color-mix(in srgb, var(--honey-2) 30%, transparent);
+    color: inherit;
+  }
+  .empty {
+    margin: 0;
+    padding: 16px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+</style>
