@@ -4,9 +4,24 @@ import Hero from "@/components/landing/Hero.astro";
 import How from "@/components/landing/How.astro";
 import SiteFooter from "@/components/layout/SiteFooter.astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import { links, site } from "@/lib/site";
+
+const app = {
+  "@type": "SoftwareApplication",
+  name: site.name,
+  description: site.description,
+  url: site.url,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Linux",
+  softwareVersion: site.release.replace(/^v/, ""),
+  license: "https://www.gnu.org/licenses/agpl-3.0.html",
+  downloadUrl: links.latest,
+  offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+  publisher: { "@id": `${site.url}/#organization` },
+};
 ---
 
-<BaseLayout title="Bunzzle: email delivery on your own servers">
+<BaseLayout title="Bunzzle: email infrastructure you run yourself" schema={[app]}>
   <main id="content">
     <Hero />
     <How />

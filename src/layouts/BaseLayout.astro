@@ -10,11 +10,40 @@ interface Props {
   title: string;
   description?: string;
   docs?: boolean;
+  type?: "website" | "article";
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
 }
 
-const { title, description = site.description, docs = false } = Astro.props;
+const { title, description = site.description, docs = false, type = "website", noindex = false, schema = [] } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const image = new URL("/og.png", Astro.site);
+const org = `${site.url}/#organization`;
+const graph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": org,
+      name: site.name,
+      url: site.url,
+      logo: { "@type": "ImageObject", url: new URL(site.logo, Astro.site).href, width: 512, height: 512 },
+      email: site.email,
+      founder: { "@type": "Person", name: site.author.name, url: site.author.url },
+      sameAs: [site.org, site.x.url, site.bluesky.url],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${site.url}/#website`,
+      name: site.name,
+      url: site.url,
+      inLanguage: "en",
+      publisher: { "@id": org },
+    },
+    ...schema,
+  ],
+};
+const json = JSON.stringify(graph).replace(/</g, "\\u003c");
 ---
 
 <!doctype html>
@@ -25,19 +54,29 @@ const image = new URL("/og.png", Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta name="author" content={site.author.name} />
+    <link rel="me" href={site.org} />
+    <link rel="me" href={site.x.url} />
+    <link rel="me" href={site.bluesky.url} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#12100e" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={image} />
+    <meta property="og:image:alt" content="The Bunzzle logo, a rabbit in a box" />
     <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content={site.x.handle} />
+    <meta name="twitter:image:alt" content="The Bunzzle logo, a rabbit in a box" />
+    <script type="application/ld+json" set:html={json} />
     <Font cssVariable="--font-geist" preload />
     <Font cssVariable="--font-geist-mono" preload />
     <Font cssVariable="--font-bricolage" preload />
