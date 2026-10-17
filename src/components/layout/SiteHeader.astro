@@ -1,9 +1,11 @@
 ---
 import ChevronIcon from "@/assets/icons/arrow-up-right.svg";
+import BlueskyIcon from "@/assets/icons/bluesky.svg";
 import GithubIcon from "@/assets/icons/github.svg";
 import MoonIcon from "@/assets/icons/moon.svg";
 import SearchIcon from "@/assets/icons/search.svg";
 import SunIcon from "@/assets/icons/sun.svg";
+import XIcon from "@/assets/icons/x.svg";
 import Logo from "@/components/brand/Logo.astro";
 import { href, ordered, sections } from "@/lib/docs";
 import { navLinks, site } from "@/lib/site";
@@ -18,6 +20,11 @@ const links = navLinks;
 const isOn = (h: string) =>
   h === "/docs/" ? path.startsWith("/docs/") && !path.startsWith("/docs/api/") : h.startsWith("/") && path.startsWith(h);
 const all = docs ? await ordered() : [];
+const socials = [
+  ["GitHub", site.repo, GithubIcon, 16],
+  ["X", site.x.url, XIcon, 14],
+  ["Bluesky", site.bluesky.url, BlueskyIcon, 16],
+] as const;
 ---
 
 <header class:list={["nav", { "nav-docs": docs }]} data-nav>
@@ -42,6 +49,12 @@ const all = docs ? await ordered() : [];
         <SunIcon class="sun" width={16} height={16} aria-hidden="true" />
         <MoonIcon class="moon" width={16} height={16} aria-hidden="true" />
       </button>
+      <a class="ctl icon social" href={site.x.url} aria-label="Bunzzle on X">
+        <XIcon width={14} height={14} aria-hidden="true" />
+      </a>
+      <a class="ctl icon social" href={site.bluesky.url} aria-label="Bunzzle on Bluesky">
+        <BlueskyIcon width={16} height={16} aria-hidden="true" />
+      </a>
       <a class="ctl github" href={site.repo}>
         <GithubIcon width={15} height={15} aria-hidden="true" />
         <span>Star</span>
@@ -55,7 +68,11 @@ const all = docs ? await ordered() : [];
     {!docs && (
       <div class="menu" data-menu hidden>
         {links.map(([label, h]) => <a class="menu-link" href={h}>{label}</a>)}
-        <a class="menu-link" href={site.repo}>GitHub</a>
+        <div class="menu-social">
+          {socials.map(([label, h, Icon, size]) => (
+            <a href={h} aria-label={`Bunzzle on ${label}`}><Icon width={size} height={size} aria-hidden="true" /></a>
+          ))}
+        </div>
       </div>
     )}
   </div>
@@ -75,6 +92,11 @@ const all = docs ? await ordered() : [];
             ))}
           </div>
         ))}
+        <div class="menu-social sheet-social">
+          {socials.map(([label, h, Icon, size]) => (
+            <a href={h} aria-label={`Bunzzle on ${label}`}><Icon width={size} height={size} aria-hidden="true" /></a>
+          ))}
+        </div>
       </div>
     </div>
   )}
@@ -296,7 +318,8 @@ const all = docs ? await ordered() : [];
   :global(:root[data-theme="dark"]) .moon {
     display: block;
   }
-  :global(:root[data-theme="light"]) .github svg {
+  :global(:root[data-theme="light"]) .github svg,
+  :global(:root[data-theme="light"]) .social svg {
     color: #77726a;
   }
   .cta {
@@ -395,6 +418,31 @@ const all = docs ? await ordered() : [];
     opacity: 1;
     transform: none;
   }
+  .menu-social {
+    display: flex;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 8px 6px 2px;
+    border-top: 1px solid var(--shell-border);
+  }
+  .menu-social a {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: var(--muted);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .menu-social a:hover {
+    background: var(--ghost);
+    color: var(--ink);
+  }
+  .sheet-social {
+    justify-content: center;
+    margin-top: 24px;
+    padding-top: 16px;
+  }
   @keyframes menu-in {
     from {
       opacity: 0;
@@ -428,9 +476,7 @@ const all = docs ? await ordered() : [];
     right: 0;
     bottom: 0;
     display: flex;
-    background: color-mix(in srgb, var(--shell-solid) 96%, transparent);
-    backdrop-filter: blur(32px) saturate(1.3);
-    -webkit-backdrop-filter: blur(32px) saturate(1.3);
+    background: var(--shell-solid);
     pointer-events: auto;
     animation: fade-in 0.2s ease;
   }
@@ -521,6 +567,7 @@ const all = docs ? await ordered() : [];
     }
     .links,
     .divider,
+    .social,
     .github,
     .search-text,
     .search kbd {

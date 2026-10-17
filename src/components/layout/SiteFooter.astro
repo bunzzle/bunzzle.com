@@ -6,7 +6,7 @@ import { links, site } from "@/lib/site";
 const cols: [string, [string, string][]][] = [
   ["Product", [["Docs", "/docs/"], ["API", "/docs/api/"], ["Changelog", links.releases], ["llms.txt", "/llms.txt"]]],
   ["Project", [["GitHub", site.repo], ["Issues", links.issues], ["Security", links.security], ["License", links.license]]],
-  ["Contact", [[site.email, `mailto:${site.email}`], [site.author.name, site.author.url]]],
+  ["Contact", [[site.email, `mailto:${site.email}`], ["X", site.x.url], ["Bluesky", site.bluesky.url], [site.author.name, site.author.url]]],
 ];
 ---
 
@@ -28,7 +28,7 @@ const cols: [string, [string, string][]][] = [
       <div class="top">
         <div class="brand">
           <a href="/" aria-label="Bunzzle home"><Logo /></a>
-          <p>Self-hosted email delivery for apps.<br />Open source. Bun-native.</p>
+          <p>Email infrastructure you run yourself.<br />Open source.</p>
         </div>
         <nav class="cols">
           {cols.map(([title, links]) => (
