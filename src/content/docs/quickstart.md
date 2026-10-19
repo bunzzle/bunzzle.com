@@ -7,11 +7,13 @@ order: 3
 
 ## First email
 
+Create an API key (it is shown only once), add your domain and publish the DNS records it prints, verify the domain, then run `doctor`, which checks IPs, DNS and signing and tells you what to fix.
+
 ```sh
-sudo bunzzle keys create --name my-app --scope full   # prints a bz_… key once
-sudo bunzzle domains add your.domain                  # prints the DNS records to publish
-sudo bunzzle domains verify your.domain               # after publishing them
-sudo bunzzle doctor                                   # checks IPs, DNS and signing; says what to fix
+sudo bunzzle keys create --name my-app --scope full
+sudo bunzzle domains add your.domain
+sudo bunzzle domains verify your.domain
+sudo bunzzle doctor
 
 curl -X POST http://127.0.0.1:3000/emails \
   -H "Authorization: Bearer bz_…" -H "Content-Type: application/json" \
@@ -20,8 +22,10 @@ curl -X POST http://127.0.0.1:3000/emails \
 
 ## Send one email without the server
 
+`dkim keygen` creates a key encrypted with the master key and prints the DNS records to publish.
+
 ```sh
-./dist/bunzzle dkim keygen --domain your.domain --out dkim.json   # encrypted with the master key; prints the DNS records
+./dist/bunzzle dkim keygen --domain your.domain --out dkim.json
 ./dist/bunzzle send --from "You <hello@your.domain>" --to someone@example.com \
   --subject "Hello" --text "Sent by Bunzzle" --dkim-keys dkim.json --ehlo mail.your.domain
 ```
