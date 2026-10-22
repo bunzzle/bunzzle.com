@@ -7,25 +7,25 @@ order: 1
 
 Self-hosted email delivery engine for apps. Delivers straight to your recipients' mail servers. Bun-native, one binary, one SQLite file.
 
-> Status: v0.1.0, first release. Test it on a throwaway domain before sending real mail.
+> Status: v0.2.0. Test it on a throwaway domain before sending real mail.
 
 ## Why
 
-- **A plain API, on your own server.** `POST /emails` takes simple JSON fields, and webhooks are signed in the Standard Webhooks format, so verifying them takes a few lines.
-- **No relay in between.** Bunzzle talks SMTP to Gmail, Outlook and every other receiver itself. No third-party sending service, no per-email bill.
-- **Reputation handled for you.** New IPs warm up on their own, every destination gets a polite speed that adapts to its replies, bounces and complaints are suppressed, and bulk mail is held before it can hurt your password resets.
-- **Contained by design.** Five processes, each holding only what it needs. Every email body is encrypted with its own key; DKIM keys never leave the signer.
+- A small HTTP API on your own server. `POST /emails` takes plain JSON, and webhooks are signed in the Standard Webhooks format.
+- No relay in between. Bunzzle talks SMTP to Gmail, Outlook and every other receiver itself, so there is no sending service to pay per email. If your provider blocks port 25, you can still point it at a relay (`BUNZZLE_RELAY_HOST`), for all mail or only for some providers, and as a fallback while a provider blocks your IPs.
+- New IPs warm up on their own, each destination gets a sending speed that follows its replies, bounces and complaints are suppressed, and bulk mail is held before it can delay your password resets.
+- Six processes, each with only the access it needs. Every email body is encrypted with its own key, and DKIM keys never leave the signer.
 
 It is for sending transactional and bulk email from your apps. It does not host mailboxes (no IMAP) and has no campaign editor.
 
 ## What you need
 
-- A Linux server with **outbound port 25 open** and a static IP whose **reverse DNS (PTR)** you can set. Many providers block port 25 until you ask.
-- A domain whose DNS you control, to publish the DKIM, SPF and bounce records Bunzzle prints (or let it publish them on Cloudflare).
+- A Linux server with outbound port 25 open and a static IP whose reverse DNS (PTR) you can set. Many providers block port 25 until you ask.
+- A domain whose DNS you control, to publish the DKIM, SPF and bounce records Bunzzle prints (or let it publish them on Cloudflare, Route 53, deSEC or any DNS server that accepts RFC 2136 updates).
 
 ## How it's built
 
-Bunzzle runs as five separate processes, each holding only what it needs:
+Bunzzle runs as six separate processes, each holding only what it needs:
 
 | Role | Does | Cannot |
 |---|---|---|
@@ -34,6 +34,7 @@ Bunzzle runs as five separate processes, each holding only what it needs:
 | delivery | DNS and SMTP to recipients' servers | read the database or any key |
 | signer | DKIM signing, body decryption | reach the network or the database |
 | inbound | bounces and complaints | read the database or keys |
+| dns | publishes DNS records through the provider's API | read email, the database or any key |
 
 Every email body is encrypted with its own key, and those keys are destroyed when retention ends, so old backups stay unreadable. A role that crashes is restarted; email in flight is reconciled, never silently sent twice.
 
@@ -47,4 +48,4 @@ On a 2-CPU, 2 GB Linux machine (the load generator and test mail servers on the 
 | Emails delivered end to end, STARTTLS and two DKIM signatures each | 1,480 per second |
 | CPU per delivered email | 1.2 ms, two thirds of it the RSA signature |
 
-Memory for all five roles stays around 285 MB during sustained sending (measured separately, 60,000 emails). In practice receivers set the pace long before the CPU does. Method and more numbers: [bench/README.md](https://github.com/bunzzle/bunzzle/blob/main/bench/README.md).
+Memory for all roles stays around 285 MB during sustained sending (measured separately, 60,000 emails). In practice receivers set the pace long before the CPU does. Method and more numbers: [bench/README.md](https://github.com/bunzzle/bunzzle/blob/main/bench/README.md).

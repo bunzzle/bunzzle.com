@@ -11,7 +11,7 @@ export const site = {
   x: { handle: "@bunzzledev", url: "https://x.com/bunzzledev" },
   bluesky: { handle: "@bunzzle.com", url: "https://bsky.app/profile/bunzzle.com" },
   linkedin: { url: "https://www.linkedin.com/company/bunzzle" },
-  release: "v0.1.0",
+  release: "v0.2.0",
 };
 
 export const links = {

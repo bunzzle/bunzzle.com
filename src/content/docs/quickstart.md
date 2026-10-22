@@ -25,6 +25,7 @@ curl -X POST http://127.0.0.1:3000/emails \
 `dkim keygen` creates a key encrypted with the master key and prints the DNS records to publish.
 
 ```sh
+export BUNZZLE_MASTER_KEY=$(./dist/bunzzle master-key)
 ./dist/bunzzle dkim keygen --domain your.domain --out dkim.json
 ./dist/bunzzle send --from "You <hello@your.domain>" --to someone@example.com \
   --subject "Hello" --text "Sent by Bunzzle" --dkim-keys dkim.json --ehlo mail.your.domain

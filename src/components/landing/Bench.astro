@@ -4,7 +4,7 @@ const cards = [
   ["~", 6000, 0, "/s", "Accepted", "Emails accepted by the API and stored durably, p99 under 27 ms."],
   ["", 1480, 0, "/s", "Delivered", "End to end, with STARTTLS and two DKIM signatures each."],
   ["", 1.2, 1, "ms", "CPU per email", "Two thirds of it is the RSA signature."],
-  ["", 285, 0, "MB", "Memory", "All five roles together, during sustained sending."],
+  ["", 285, 0, "MB", "Memory", "All roles together, during sustained sending."],
 ] as const;
 const format = (n: number, d: number) =>
   n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
