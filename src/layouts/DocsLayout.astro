@@ -106,13 +106,6 @@ const schema = [
     max-width: var(--docs-content);
     margin: 0 auto;
     padding: 24px 0 100px;
-    animation: enter 0.28s var(--ease-out) both;
-  }
-  @keyframes enter {
-    from {
-      opacity: 0;
-      transform: translateY(6px);
-    }
   }
   .head {
     display: flex;
@@ -164,11 +157,6 @@ const schema = [
     .head {
       flex-direction: column;
       gap: 14px;
-    }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .article {
-      animation: none;
     }
   }
 </style>
