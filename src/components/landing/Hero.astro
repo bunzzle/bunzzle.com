@@ -8,12 +8,13 @@ const code = [
   ['<span class="t-kw">const</span> res = <span class="t-kw">await</span> fetch(<span class="t-str">"https://mail.example.com/emails"</span>, {'],
   ['  method: <span class="t-str">"POST"</span>,'],
   ["  headers: {"],
-  ['    Authorization: <span class="t-str">`Bearer ${process.env.BUNZZLE_KEY}`</span>,'],
+  ['    Authorization: <span class="t-str">`Bearer ${Bun.env.BUNZZLE_KEY}`</span>,'],
   ['    <span class="t-str">"Idempotency-Key"</span>: <span class="t-str">"order-42"</span>,'],
   ["  },"],
   ["  body: JSON.stringify({"],
   ['    from: <span class="t-str">"Shop &lt;hello@example.com&gt;"</span>,'],
-  ['    to: [<span class="t-str">"ana@example.org"</span>],'],
+  ['    to: [<span class="t-str">"ana@example.org"</span>, <span class="t-str">"ben@example.net"</span>,'],
+  ['         <span class="t-str">"cleo@example.com"</span>, <span class="t-str">"dan@example.io"</span>],'],
   ['    subject: <span class="t-str">"Your order has shipped"</span>,'],
   ['    html: <span class="t-str">"&lt;p&gt;It is on its way.&lt;/p&gt;"</span>,'],
   ["  }),"],
@@ -83,7 +84,7 @@ const rows = [
           ))}
         </div>
         <a class="status-foot" href="/docs/api/">
-          Every attempt, with MX, TLS and the reply
+          Every attempt, with MX, TLS and the full SMTP conversation
           <ExternalIcon width={12} height={12} aria-hidden="true" />
         </a>
       </div>
