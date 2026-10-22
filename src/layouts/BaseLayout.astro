@@ -79,9 +79,9 @@ const json = JSON.stringify(graph).replace(/</g, "\\u003c");
     <meta name="twitter:site" content={site.x.handle} />
     <meta name="twitter:image:alt" content="Bunzzle: email infrastructure you run yourself." />
     <script type="application/ld+json" set:html={json} />
-    <Font cssVariable="--font-geist" />
-    <Font cssVariable="--font-geist-mono" />
-    <Font cssVariable="--font-bricolage" />
+    <Font cssVariable="--font-geist" preload />
+    <Font cssVariable="--font-geist-mono" preload />
+    <Font cssVariable="--font-bricolage" preload />
     <script is:inline>
       try {
         const t = localStorage.getItem("theme");
