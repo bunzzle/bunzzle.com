@@ -11,6 +11,12 @@ order: 5
 
 `GET /nodes` lists each delivery role: whether core reaches it, when it last answered and why it did not, its source IPs, when its certificate expires, the recipients delivered through it since core started, and the jobs whose last attempt went to it that are still leased or waiting for a check. The delivery role on the core machine is `local`. The metrics have the same per delivery role, with a `node` label: `bunzzle_node_up`, `bunzzle_node_ips`, `bunzzle_node_delivered_total` and `bunzzle_node_jobs`.
 
+`bunzzle_role_cpu_seconds_total` is the CPU time each role's process has used since it started (on Linux), with a `role` label, and a `node` label for a delivery node on another machine. `bunzzle_role_up` is 1 while the role answers core. The share of a CPU core each role uses over the last 5 minutes:
+
+```
+rate(bunzzle_role_cpu_seconds_total[5m])
+```
+
 ## OpenTelemetry
 
 | Variable | Default | |
