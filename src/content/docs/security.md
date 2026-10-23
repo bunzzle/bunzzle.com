@@ -67,8 +67,9 @@ This is intended. It is opportunistic TLS (RFC 3207): a server that refuses TLS 
 Core and remote delivery nodes talk over TCP with mutual TLS 1.3. Each side checks the other's certificate against the node CA and against a pinned public key.
 
 - The node CA (ECDSA P-256, 2 years) is kept by the signer, encrypted with the master key. With `BUNZZLE_DKIM_STORE_SOCKET`, its key is created in the external key store instead and never leaves it.
-- Each node makes its own key with `bunzzle nodes request`; the key never leaves the node. Node certificates last 30 days.
-- Core's client certificate lasts 7 days and is kept in the data directory.
+- Each node makes its own key with `bunzzle nodes request`; the key never leaves the node. Node certificates last 30 days. With 10 days left, core renews them over the link, and the node makes a new key for each renewal.
+- Core's client certificate lasts 7 days and is kept in the data directory. Core renews it every day with a new key, and sends the new pin to every node before it switches. While a node is unreachable, the renewal waits. With less than 2 days left, core renews anyway; a node that was unreachable then has to be added again (`bunzzle nodes remove`, then `request`, `add` and `install`).
+- `bunzzle nodes remove` closes the link to that node at once.
 - `bunzzle doctor` warns 60 days before the node CA expires and 3 days before a node certificate expires.
 
 ### Rotating the node CA
@@ -81,13 +82,13 @@ bunzzle nodes rotate-ca promote
 bunzzle nodes rotate-ca finish
 ```
 
-1. `start` creates a next CA. Core and every node added from then on trust both CAs. Certificates still come from the active CA.
-2. `promote` makes the next CA issue certificates and reissues core's certificate from it, with the same key. It is refused while any node does not trust the new CA.
-3. `finish` drops the old CA. It is refused while any node certificate comes from the old CA.
+1. `start` creates a next CA and sends it to every node, so core and the nodes trust both CAs. Certificates still come from the active CA.
+2. `promote` makes the next CA issue certificates, reissues core's certificate from it with the same key, and renews every node certificate from it. It is refused while any node does not trust the new CA.
+3. `finish` drops the old CA on core and on every node. It is refused while any node certificate comes from the old CA.
 
 `bunzzle nodes rotate-ca` without a step shows the CAs and the nodes the next step is waiting for.
 
-Nodes can't yet report the CAs they trust or get a new certificate during a rotation. Until they can, `promote` succeeds only when every node was added after `start`, and `finish` only when every node was added after `promote`. With no nodes, both always succeed. To move a node over by hand, remove it with `bunzzle nodes remove`, then run `request`, `add` and `install` again.
+Core checks every node each hour and after each step. A node that is unreachable holds up `promote` and `finish` until it is back. To move a node over by hand, remove it with `bunzzle nodes remove`, then run `request`, `add` and `install` again.
 
 With an external key store, `finish` does not delete the old CA key from the store. It prints the key's name instead. Bunzzle no longer uses that key: delete it in the key store yourself.
 
