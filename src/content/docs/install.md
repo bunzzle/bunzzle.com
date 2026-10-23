@@ -43,6 +43,8 @@ Admin commands talk to the running server through `/run/bunzzle/admin.sock`, whi
 
 Logs: `journalctl -u 'bunzzle-*' -f`. Status: `systemctl status 'bunzzle-*'`.
 
+To send from more servers, add delivery nodes (see [Delivery nodes](/docs/delivery-nodes/)).
+
 ### Optional secrets
 
 Secrets are passed as systemd credentials, readable only by the role that needs them. To let Bunzzle publish its DNS records on Cloudflare, create an API token with only `Zone.DNS: Edit`, limited to the zones you send from (see [Security design](/docs/security/) for why):
