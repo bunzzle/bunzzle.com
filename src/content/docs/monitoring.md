@@ -7,9 +7,9 @@ order: 5
 
 ## Metrics
 
-`GET /metrics` (API key with the read scope) gives the same state in the OpenMetrics text format for a monitoring system: jobs by state, recipients by status and domain, each path's speed, pause and backlog, webhook backlog, suppressions and holds.
+`GET /metrics` (API key with the read scope) gives the same state in the OpenMetrics text format for a monitoring system: jobs by state, recipients by status and domain, each path's speed, pause and backlog, webhook backlog, suppressions and holds. With `BUNZZLE_OTLP_ENDPOINT`, the same metrics and a trace per email (intake, each delivery attempt and each SMTP session) are sent to an OpenTelemetry collector.
 
-`GET /nodes` lists each delivery role: whether core reaches it, when it last answered and why it did not, its source IPs, when its certificate expires, the recipients delivered through it since core started, and the jobs whose last attempt went to it that are still leased or waiting for a check. The delivery role on the core machine is `local`. The metrics have the same per delivery role, with a `node` label: `bunzzle_node_up`, `bunzzle_node_ips`, `bunzzle_node_delivered_total` and `bunzzle_node_jobs`. With `BUNZZLE_OTLP_ENDPOINT`, the same metrics and a trace per email (intake, each delivery attempt and each SMTP session) are sent to an OpenTelemetry collector.
+`GET /nodes` lists each delivery role: whether core reaches it, when it last answered and why it did not, its source IPs, when its certificate expires, the recipients delivered through it since core started, and the jobs whose last attempt went to it that are still leased or waiting for a check. The delivery role on the core machine is `local`. The metrics have the same per delivery role, with a `node` label: `bunzzle_node_up`, `bunzzle_node_ips`, `bunzzle_node_delivered_total` and `bunzzle_node_jobs`.
 
 ## OpenTelemetry
 
