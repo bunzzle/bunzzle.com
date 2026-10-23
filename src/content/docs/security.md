@@ -62,6 +62,35 @@ Delivery goes on in plain text only when both of these are true:
 
 This is intended. It is opportunistic TLS (RFC 3207): a server that refuses TLS still gets the email, and the delivery record shows TLS `none`. Any policy that requires TLS for a destination turns this path off; the attempt is then deferred instead.
 
+## Delivery node certificates
+
+Core and remote delivery nodes talk over TCP with mutual TLS 1.3. Each side checks the other's certificate against the node CA and against a pinned public key.
+
+- The node CA (ECDSA P-256, 2 years) is kept by the signer, encrypted with the master key. With `BUNZZLE_DKIM_STORE_SOCKET`, its key is created in the external key store instead and never leaves it.
+- Each node makes its own key with `bunzzle nodes request`; the key never leaves the node. Node certificates last 30 days.
+- Core's client certificate lasts 7 days and is kept in the data directory.
+- `bunzzle doctor` warns 60 days before the node CA expires and 3 days before a node certificate expires.
+
+### Rotating the node CA
+
+Run the three steps on core, in this order:
+
+```sh
+bunzzle nodes rotate-ca start
+bunzzle nodes rotate-ca promote
+bunzzle nodes rotate-ca finish
+```
+
+1. `start` creates a next CA. Core and every node added from then on trust both CAs. Certificates still come from the active CA.
+2. `promote` makes the next CA issue certificates and reissues core's certificate from it, with the same key. It is refused while any node does not trust the new CA.
+3. `finish` drops the old CA. It is refused while any node certificate comes from the old CA.
+
+`bunzzle nodes rotate-ca` without a step shows the CAs and the nodes the next step is waiting for.
+
+Nodes can't yet report the CAs they trust or get a new certificate during a rotation. Until they can, `promote` succeeds only when every node was added after `start`, and `finish` only when every node was added after `promote`. With no nodes, both always succeed. To move a node over by hand, remove it with `bunzzle nodes remove`, then run `request`, `add` and `install` again.
+
+With an external key store, `finish` does not delete the old CA key from the store. It prints the key's name instead. Bunzzle no longer uses that key: delete it in the key store yourself.
+
 ## Abuse
 
 - Only verified domains can send.
