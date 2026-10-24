@@ -43,7 +43,7 @@ Admin commands talk to the running server through `/run/bunzzle/admin.sock`, whi
 
 Logs: `journalctl -u 'bunzzle-*' -f`. Status: `systemctl status 'bunzzle-*'`.
 
-To send from more servers, add delivery nodes (see [Delivery nodes](/docs/delivery-nodes/)).
+To send from more servers, add delivery nodes (see [Delivery nodes](/docs/delivery-nodes/)), or egresses for servers that only lend their IPs (see [Egresses](/docs/egresses/)).
 
 ### Optional secrets
 
