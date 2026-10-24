@@ -59,7 +59,7 @@ sudo nft add element inet bunzzle core4 '{ 203.0.113.10 }'
 sudo nft add element inet bunzzle link_ports '{ 7465 }'
 ```
 
-On core, the core role may connect to the node:
+On core, the link role may connect to the node:
 
 ```sh
 sudo nft add element inet bunzzle node_links4 '{ 198.51.100.7 . 7465 }'

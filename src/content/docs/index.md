@@ -14,7 +14,7 @@ Self-hosted email delivery engine for apps. Delivers straight to your recipients
 - A small HTTP API on your own server. `POST /emails` takes plain JSON, and webhooks are signed in the Standard Webhooks format.
 - No relay in between. Bunzzle talks SMTP to Gmail, Outlook and every other receiver itself, so there is no sending service to pay per email. If your provider blocks port 25, you can still point it at a relay (`BUNZZLE_RELAY_HOST`), for all mail or only for some providers, and as a fallback while a provider blocks your IPs.
 - New IPs warm up on their own, each destination gets a sending speed that follows its replies, bounces and complaints are suppressed, and bulk mail is held before it can delay your password resets.
-- Six processes, each with only the access it needs. Every email body is encrypted with its own key, and DKIM keys never leave the signer.
+- Seven processes, each with only the access it needs. Every email body is encrypted with its own key, and DKIM keys never leave the signer.
 
 It is for sending transactional and bulk email from your apps. It does not host mailboxes (no IMAP) and has no campaign editor.
 
@@ -25,7 +25,7 @@ It is for sending transactional and bulk email from your apps. It does not host 
 
 ## How it's built
 
-Bunzzle runs as six separate processes, each holding only what it needs:
+Bunzzle runs as seven separate processes, each holding only what it needs:
 
 | Role | Does | Cannot |
 |---|---|---|
@@ -35,6 +35,7 @@ Bunzzle runs as six separate processes, each holding only what it needs:
 | signer | DKIM signing, body decryption | reach the network or the database |
 | inbound | bounces and complaints | read the database or keys |
 | dns | publishes DNS records through the provider's API | read email, the database or any key |
+| link | carries core's encrypted links to delivery nodes and egresses | read the database, any key or any message |
 
 Every email body is encrypted with its own key, and those keys are destroyed when retention ends, so old backups stay unreadable. A role that crashes is restarted; email in flight is reconciled, never silently sent twice.
 
