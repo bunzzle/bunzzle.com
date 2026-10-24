@@ -39,7 +39,7 @@ This installs the binary and the systemd unit of the delivery role only, and cre
    ```sh
    sudo bunzzle nodes add mail-2 198.51.100.7:7465 request.csr
    ```
-   This writes `mail-2.bundle.json`, with the node's certificate, the node CA and core's pin.
+   This writes `mail-2.bundle.json`, with the node's certificate, the node CA and core's pin, and lets the link role reach the node's IP. `sudo bunzzle nodes allow` sets the IPs the link role may reach again from the node list, for example after a restore.
 3. Copy the bundle to the node, install it and restart the delivery role:
    ```sh
    sudo install -o bunzzle-delivery -m 0600 mail-2.bundle.json /var/lib/bunzzle/node/
