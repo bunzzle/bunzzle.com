@@ -57,7 +57,7 @@ sudo nft add element inet bunzzle core4 '{ 203.0.113.10 }'
 sudo nft add element inet bunzzle link_ports '{ 7466 }'
 ```
 
-On core, the core and delivery roles may connect to the egress:
+On core, the link and delivery roles may connect to the egress:
 
 ```sh
 sudo nft add element inet bunzzle egress_links4 '{ 198.51.100.8 . 7466 }'
