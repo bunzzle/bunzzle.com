@@ -70,6 +70,7 @@ Core and remote delivery nodes talk over TCP with mutual TLS 1.3. Each side chec
 - Each node makes its own key with `bunzzle nodes request`; the key never leaves the node. Node certificates last 30 days. With 10 days left, core renews them over the link, and the node makes a new key for each renewal.
 - Core's client certificate lasts 7 days and is kept in the data directory. Core renews it every day with a new key, and sends the new pin to every node before it switches. While a node is unreachable, the renewal waits. With less than 2 days left, core renews anyway; a node that was unreachable then has to be added again (`bunzzle nodes remove`, then `request`, `add` and `install`).
 - `bunzzle nodes remove` closes the link to that node at once.
+- Core's delivery role has its own link certificate for egresses, 7 days, with a key it makes in memory at each start. Core renews it every day and sends the new pin to every egress before it switches, like its own. An egress accepts link calls only from core's pin; the delivery role's pin may only open connections to port 25.
 - `bunzzle doctor` warns 60 days before the node CA expires and 3 days before a node certificate expires.
 
 ### Rotating the node CA
