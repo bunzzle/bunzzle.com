@@ -23,7 +23,7 @@ No. Bunzzle sends transactional and bulk email from your apps. It has no IMAP an
 
 ## Is it ready for production?
 
-v0.2.0. Test it on a throwaway domain before sending real mail, and run `bunzzle doctor` after every change.
+v0.3.0. Test it on a throwaway domain before sending real mail, and run `bunzzle doctor` after every change.
 
 ## Can I verify what I install?
 
