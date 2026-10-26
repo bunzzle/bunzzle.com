@@ -17,6 +17,19 @@ order: 5
 rate(bunzzle_role_cpu_seconds_total[5m])
 ```
 
+## Blocklists and DNS
+
+Bunzzle watches its sending IPs and domains by itself and records each change once in the admin event log:
+
+| Event | When |
+|---|---|
+| `ip.listed` | A sending IP appears on a blocklist. |
+| `ip.delisted` | The IP is no longer on that list. |
+| `domain.dns_problem` | A verified domain's required DNS records or DKIM signatures were wrong in two checks in a row. The event lists the problems. |
+| `domain.dns_ok` | The domain passed two checks in a row again. |
+
+Blocklists are checked every 6 hours, and domains every 6 hours (every hour while something is wrong). The metrics show the same state: `bunzzle_ip_listed{ip,list}` is 1 between `ip.listed` and `ip.delisted`, `bunzzle_domain_dns_ok{domain}` is 0 between `domain.dns_problem` and `domain.dns_ok`, and `bunzzle_domain_dns_problems{domain}` counts the problems at the last check. `bunzzle doctor` shows the details, with each list's removal page and, when the domain publishes a BIMI record, whether it is correct.
+
 ## OpenTelemetry
 
 | Variable | Default | |
