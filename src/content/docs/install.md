@@ -145,10 +145,16 @@ To keep sending during an upgrade, restart the roles one at a time instead of th
 
 ## Backup and restore
 
-`bunzzle backup --to DIR` writes a consistent copy of the database and the key files into an empty directory, with a `manifest.json` that lists every file and its SHA-256. It is safe to run while Bunzzle is running.
+`bunzzle backup --to DIR` writes a consistent copy of the database, the key files and the email bodies into an empty directory. It is safe to run while Bunzzle is running. The directory holds `bunzzle.db`, `keys/`, and `bodies/` with one file per email body. `bodies.sha256` lists every body file with its SHA-256 and size, and `manifest.json` lists every other file the same way.
 
 ```sh
 sudo bunzzle backup --to /var/backups/bunzzle/2026-10-19
+```
+
+To keep a backup as one file, pack the directory:
+
+```sh
+sudo tar -C /var/backups/bunzzle -cf /var/backups/bunzzle/2026-10-19.tar 2026-10-19
 ```
 
 The backup does not contain the master key, and everything secret in it is encrypted with that key. Keep the master key somewhere other than the backups: a backup without its master key cannot be read, and a master key without the backup is useless to anyone else.
@@ -161,4 +167,4 @@ sudo bunzzle restore --from /var/backups/bunzzle/2026-10-19
 sudo systemctl start bunzzle
 ```
 
-`restore` checks every file against the manifest and refuses a different master key. The files it replaces are moved into `before-restore-<time>` in the data directory, not deleted.
+`restore` checks every file against `manifest.json` and `bodies.sha256` and refuses a different master key. The files it replaces, including the old `bodies/` directory, are moved into `before-restore-<time>` in the data directory, not deleted.
